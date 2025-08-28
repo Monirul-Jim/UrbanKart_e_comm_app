@@ -11,19 +11,27 @@ import { useGetAllSubCategoriesQuery } from "@/redux/api/subCategoryApi";
 import { ProductForm } from "@/interface/productInterface";
 import { useState, useEffect } from "react";
 import { CheckCircle, Info, Pencil, Trash2, X, XCircle } from "lucide-react";
+import Pagination from "@/components/Pagination/Pagination";
 
 export default function Product() {
   const { register, handleSubmit, reset, watch } = useForm<ProductForm>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 200; // 👈 backend-driven items per page
   const [createProduct] = useCreateProductMutation();
   const [updateProduct] = useUpdateProductMutation();
   const [updateStockOut] = useUpdateStockOutMutation();
-  const { data, isLoading } = useGetAllProductsQuery(undefined);
+
+  const { data, isLoading } = useGetAllProductsQuery({
+    page: currentPage,
+    limit,
+  });
+  console.log(data);
   const { data: subCategories } = useGetAllSubCategoriesQuery(undefined);
   const [deleteProduct] = useDeleteProductMutation();
-  console.log(data?.data);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [viewProduct, setViewProduct] = useState<any>(null); // for modal view
-
+  const { data: products, meta } = data || {};
+  const totalPages = meta?.totalPage || 1;
   const isFlashSale = watch("isFlashSale");
 
   // preload form values when editing
@@ -205,17 +213,18 @@ export default function Product() {
       </form>
 
       {/* Product Table */}
-      <div >
+      <div>
         {Object.entries(
-          data.data.reduce((groups: Record<string, any[]>, product: any) => {
+          data?.data?.reduce((groups: Record<string, any[]>, product: any) => {
             const categoryName =
-              product.subCategory?.category?.name || "Others";
+              product?.subCategory?.category?.name || "Others";
             if (!groups[categoryName]) groups[categoryName] = [];
             groups[categoryName].push(product);
             return groups;
-          }, {})
+          }, {}) || {}
         ).map(([categoryName, products]) => {
-          const typedProducts = products as any[]; // 👈 cast to any[]
+          const typedProducts = products as any[];
+
           return (
             <div key={categoryName} className="mb-10">
               <h2 className="text-xl font-bold mb-3">{categoryName}</h2>
@@ -244,30 +253,30 @@ export default function Product() {
                         <td className="px-6 py-4">{index + 1}</td>
                         <td className="px-6 py-4">
                           <img
-                            src={product.image}
-                            alt={product.title}
+                            src={product?.image}
+                            alt={product?.title}
                             className="w-16 h-16 object-cover rounded"
                           />
                         </td>
                         <td className="px-6 py-4 font-semibold">
-                          {product.title}
+                          {product?.title}
                         </td>
-                        <td className="px-6 py-4">${product.price}</td>
+                        <td className="px-6 py-4">${product?.price}</td>
                         <td className="px-6 py-4">
-                          {product.discountPrice
-                            ? `$${product.discountPrice}`
+                          {product?.discountPrice
+                            ? `$${product?.discountPrice}`
                             : "-"}
                         </td>
                         <td className="px-6 py-4">
-                          {product.subCategory?.name}
+                          {product?.subCategory?.name}
                         </td>
                         <td className="px-6 py-4">
                           {product?.createdAt
-                            ? new Date(product.createdAt).toLocaleString()
+                            ? new Date(product?.createdAt).toLocaleString()
                             : "-"}
                           <br />
                           {product?.updatedAt
-                            ? new Date(product.updatedAt).toLocaleString()
+                            ? new Date(product?.updatedAt).toLocaleString()
                             : "-"}
                         </td>
                         <td className="px-6 py-4">
@@ -280,7 +289,7 @@ export default function Product() {
                           )}
                         </td>
                         <td className="px-6 py-4">
-                          {product.stockOut ? (
+                          {product?.stockOut ? (
                             <span className="flex items-center gap-1 text-red-600">
                               <XCircle className="w-4 h-4" /> Out of Stock
                             </span>
@@ -333,6 +342,18 @@ export default function Product() {
                   </tbody>
                 </table>
               </div>
+
+              {/* 👇 Pagination directly under each category group */}
+              {totalPages > 1 && (
+                <div className="mt-4">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => setCurrentPage(page)}
+                    pageSiblings={2}
+                  />
+                </div>
+              )}
             </div>
           );
         })}

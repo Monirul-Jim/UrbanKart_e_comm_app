@@ -29,7 +29,7 @@ function Navbar() {
 
         <div className="hidden md:flex space-x-8 items-center">
           <NavLink icon={<Home className="w-5 h-5 mr-1" />} text="Home" href="/" />
-          <NavLink icon={<Info className="w-5 h-5 mr-1" />} text="About" href="#" />
+          <NavLink icon={<Info className="w-5 h-5 mr-1" />} text="Order" href="/order" />
           <NavLink icon={<Mail className="w-5 h-5 mr-1" />} text="Services" href="#" />
           <NavLink icon={<Phone className="w-5 h-5 mr-1" />} text="Login" href="login" />
         </div>

@@ -1,4 +1,4 @@
-// src/redux/features/productApi.ts
+
 import { baseApi } from "./baseApi";
 
 const productApi = baseApi.injectEndpoints({
@@ -12,14 +12,21 @@ const productApi = baseApi.injectEndpoints({
       invalidatesTags: ["Product"],
     }),
 
-    getAllProducts: builder.query({
-      query: () => ({
-        url: "/products",
-        method: "GET",
-      }),
+    getAllProducts: builder.query<
+      {
+        data: any[];
+        meta: { page: number; limit: number; total: number; totalPage: number };
+      },
+      { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 10 }) =>
+        `/products?page=${page}&limit=${limit}`,
+       providesTags: ["Product"],
+    }),
+ // ✅ Get single product
+    getSingleProduct: builder.query<any, string>({
+      query: (id) => `/products/${id}`,
       providesTags: ["Product"],
     }),
-
     updateProduct: builder.mutation({
       query: ({ id, data }) => ({
         url: `/products/${id}`,
@@ -52,5 +59,6 @@ export const {
   useGetAllProductsQuery,
   useUpdateProductMutation,
   useDeleteProductMutation,
-  useUpdateStockOutMutation
+  useUpdateStockOutMutation,
+  useGetSingleProductQuery
 } = productApi;
