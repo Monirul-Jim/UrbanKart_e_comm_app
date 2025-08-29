@@ -6,6 +6,7 @@ import {
   useDeleteProductMutation,
   useUpdateProductMutation,
   useUpdateStockOutMutation,
+  useUpdatePopularStatusMutation,
 } from "@/redux/api/productApi";
 import { useGetAllSubCategoriesQuery } from "@/redux/api/subCategoryApi";
 import { ProductForm } from "@/interface/productInterface";
@@ -20,12 +21,12 @@ export default function Product() {
   const [createProduct] = useCreateProductMutation();
   const [updateProduct] = useUpdateProductMutation();
   const [updateStockOut] = useUpdateStockOutMutation();
+  const [updatePopular] = useUpdatePopularStatusMutation();
 
   const { data, isLoading } = useGetAllProductsQuery({
     page: currentPage,
     limit,
   });
-  console.log(data);
   const { data: subCategories } = useGetAllSubCategoriesQuery(undefined);
   const [deleteProduct] = useDeleteProductMutation();
   const [editingProduct, setEditingProduct] = useState<any>(null);
@@ -110,6 +111,16 @@ export default function Product() {
       }).unwrap();
     } catch (error) {
       console.error("Failed to update stock status", error);
+    }
+  };
+  const handlePopularToggle = async (id: string, currentStatus: boolean) => {
+    try {
+      await updatePopular({
+         id,
+        isPopular: !currentStatus,
+      }).unwrap();
+    } catch (error) {
+      console.error("Failed to update popular status", error);
     }
   };
   return (
@@ -243,6 +254,7 @@ export default function Product() {
                         Product Upload Time
                       </th>
                       <th className="px-6 py-3 text-left">Flash Sale</th>
+                      <th className="px-6 py-3 text-left">Popular</th>
                       <th className="px-6 py-3 text-left">Stock</th>
                       <th className="px-6 py-3 text-left">Actions</th>
                     </tr>
@@ -282,6 +294,15 @@ export default function Product() {
                         <td className="px-6 py-4">
                           {product.isFlashSale ? (
                             <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-600">
+                              Yes
+                            </span>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          {product.isPopular ? (
+                            <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-600">
                               Yes
                             </span>
                           ) : (
@@ -329,6 +350,27 @@ export default function Product() {
                           >
                             <Pencil className="w-4 h-4 text-blue-600" />
                           </button>
+                          <button
+                            onClick={() =>
+                              handlePopularToggle(
+                                product._id,
+                                product.isPopular
+                              )
+                            }
+                            className={`p-2 rounded ${
+                              product.isPopular
+                                ? "bg-yellow-100 hover:bg-yellow-200"
+                                : "bg-gray-200 hover:bg-gray-300"
+                            }`}
+                            title={
+                              product.isPopular
+                                ? "Unmark Popular"
+                                : "Mark as Popular"
+                            }
+                          >
+                            ⭐
+                          </button>
+
                           <button
                             onClick={() => handleDelete(product._id)}
                             className="p-2 bg-red-100 rounded hover:bg-red-200"

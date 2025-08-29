@@ -66,6 +66,38 @@ const updateStockOut = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getFlashSaleProducts = catchAsync(async (req, res) => {
+  const result = await ProductServices.getFlashSaleProductsFromDB();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Flash Sale products fetched successfully",
+    data: result,
+  });
+});
+ const updatePopularStatus = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { isPopular } = req.body;
+
+  const result = await ProductServices.updatePopularStatusIntoDB(id, isPopular);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Product popular status updated successfully",
+    data: result,
+  });
+});
+const getPopularProducts = catchAsync(async (req, res) => {
+  const result = await ProductServices.getPopularProductsFromDB();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Popular products fetched successfully",
+    data: result,
+  });
+});
 
 export const ProductController = {
   createProduct,
@@ -73,5 +105,8 @@ export const ProductController = {
   getSingleProduct,
   updateProduct,
   deleteProduct,
-  updateStockOut
+  updateStockOut,
+  getFlashSaleProducts,
+  updatePopularStatus,
+  getPopularProducts
 };

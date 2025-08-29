@@ -24,6 +24,7 @@ const getAllProductsFromDB = async () => {
     .exec();
 };
 
+
 const getSingleProductFromDB = async (id: string) => {
   return await ProductModel.findById(id)
     .populate({
@@ -49,6 +50,35 @@ const updateStockOut = async (id: string, stockOut: boolean) => {
   return result;
 };
 
+const getFlashSaleProductsFromDB = async () => {
+  const now = new Date();
+
+  return await ProductModel.find({
+    isFlashSale: true,
+    flashSaleStart: { $lte: now },
+    flashSaleEnd: { $gte: now },
+  })
+    .populate({
+      path: "subCategory",
+      populate: { path: "category" },
+    })
+    .exec();
+};
+const updatePopularStatusIntoDB = async (id: string, isPopular: boolean) => {
+  return await ProductModel.findByIdAndUpdate(
+    id,
+    { isPopular },
+    { new: true }
+  );
+};
+const getPopularProductsFromDB = async () => {
+  return await ProductModel.find({ isPopular: true })
+    .populate({
+      path: "subCategory",
+      populate: { path: "category" },
+    })
+    .lean();
+};
 
 export const ProductServices = {
   createProductIntoDB,
@@ -56,5 +86,8 @@ export const ProductServices = {
   getSingleProductFromDB,
   updateProductIntoDB,
   deleteProductFromDB,
-  updateStockOut
+  updateStockOut,
+  getFlashSaleProductsFromDB,
+  updatePopularStatusIntoDB,
+  getPopularProductsFromDB
 };

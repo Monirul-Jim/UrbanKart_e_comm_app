@@ -21,6 +21,7 @@ const productSchema = new Schema<TProduct>(
     flashSalePrice: { type: Number },
     flashSaleStart: { type: Date },
     flashSaleEnd: { type: Date },
+     isPopular: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

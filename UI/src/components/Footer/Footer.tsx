@@ -1,16 +1,45 @@
+'use client'
 import { Facebook, Instagram, Twitter } from "lucide-react";
+import { useState } from "react";
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    alert(`Subscribed with: ${email}`); // 👉 replace with API call
+    setEmail("");
+  };
+
   return (
     <footer className="bg-gray-900 text-gray-300 mt-16">
       <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         
-        {/* Brand */}
+        {/* Brand + Newsletter */}
         <div>
           <h2 className="text-2xl font-bold text-white">Shopora</h2>
           <p className="mt-3 text-sm">
             Your one-stop shop for the best deals. Trendy products, fast delivery, and secure checkout.
           </p>
+
+          {/* Newsletter */}
+          <form onSubmit={handleSubscribe} className="mt-4 flex flex-col sm:flex-row gap-3">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition"
+            >
+              Subscribe
+            </button>
+          </form>
         </div>
 
         {/* Quick Links */}
@@ -38,7 +67,7 @@ export default function Footer() {
         {/* Social */}
         <div>
           <h3 className="text-lg font-semibold text-white mb-3">Follow Us</h3>
-          <div className="flex space-x-4">
+          <div className="flex flex-col space-y-2">
             <a href="#" className="flex items-center gap-2 hover:text-white">
               <Facebook className="w-5 h-5" /> Facebook
             </a>

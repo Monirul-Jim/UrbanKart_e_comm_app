@@ -16,7 +16,6 @@ export default function CartPage() {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const dispatch = useDispatch<AppDispatch>();
   const user = useAppSelector((state) => state.auth.user);
-  console.log(user)
   const [showForm, setShowForm] = useState(false);
   const [customer, setCustomer] = useState({
     name: "",
@@ -55,7 +54,12 @@ export default function CartPage() {
   }
 
   const handleBuyNow = async () => {
-    if (!customer.name || !customer.phone || !customer.address || !customer.city) {
+    if (
+      !customer.name ||
+      !customer.phone ||
+      !customer.address ||
+      !customer.city
+    ) {
       alert("Please fill all required fields");
       return;
     }
@@ -68,7 +72,7 @@ export default function CartPage() {
           amount: total,
           customer,
           items: cartItems, // store what user is buying
-           userId:user,
+          userId: user,
         }),
       });
 
@@ -139,19 +143,33 @@ export default function CartPage() {
       {/* ✅ Cart Total */}
       <div className="mt-10 flex justify-between items-center border-t pt-6">
         <h2 className="text-xl font-bold">Total:</h2>
-        <p className="text-2xl font-bold text-indigo-600">${total.toFixed(2)}</p>
+        <p className="text-2xl font-bold text-indigo-600">
+          ${total.toFixed(2)}
+        </p>
       </div>
 
       {/* ✅ Confirm Button */}
-      {!showForm && (
+      {!user ? (
         <div className="mt-6 flex justify-end">
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-green-600  px-6 py-2 rounded-lg shadow hover:bg-green-700"
+          <a
+            href="/login"
+            className="bg-red-600 text-white px-6 py-2 rounded-lg shadow hover:bg-red-700"
           >
-            Confirm Order
-          </button>
+            Login to Order
+          </a>
         </div>
+      ) : (
+        // ✅ If logged in → show Confirm Order
+        !showForm && (
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700"
+            >
+              Confirm Order
+            </button>
+          </div>
+        )
       )}
 
       {/* ✅ Customer Info Form */}
@@ -163,7 +181,9 @@ export default function CartPage() {
               type="text"
               placeholder="Full Name"
               value={customer.name}
-              onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+              onChange={(e) =>
+                setCustomer({ ...customer, name: e.target.value })
+              }
               className="border p-2 rounded"
             />
             <input
@@ -188,7 +208,9 @@ export default function CartPage() {
               type="text"
               placeholder="City"
               value={customer.city}
-              onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
+              onChange={(e) =>
+                setCustomer({ ...customer, city: e.target.value })
+              }
               className="border p-2 rounded"
             />
           </div>

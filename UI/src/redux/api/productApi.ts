@@ -1,4 +1,3 @@
-
 import { baseApi } from "./baseApi";
 
 const productApi = baseApi.injectEndpoints({
@@ -17,12 +16,13 @@ const productApi = baseApi.injectEndpoints({
         data: any[];
         meta: { page: number; limit: number; total: number; totalPage: number };
       },
-      { page?: number; limit?: number }>({
+      { page?: number; limit?: number }
+    >({
       query: ({ page = 1, limit = 10 }) =>
         `/products?page=${page}&limit=${limit}`,
-       providesTags: ["Product"],
+      providesTags: ["Product"],
     }),
- // ✅ Get single product
+    // ✅ Get single product
     getSingleProduct: builder.query<any, string>({
       query: (id) => `/products/${id}`,
       providesTags: ["Product"],
@@ -51,6 +51,27 @@ const productApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Product"],
     }),
+
+    updatePopularStatus: builder.mutation<
+      any,
+      { id: string; isPopular: boolean }
+    >({
+      query: ({ id, isPopular }) => ({
+        url: `/products/${id}/popular`,
+        method: "PATCH",
+        body: { isPopular },
+      }),
+      invalidatesTags: ["Product"],
+    }),
+
+    getFlashSaleProducts: builder.query({
+      query: () => `/products/flash-sale`,
+      providesTags: ["Product"],
+    }),
+    getPopularProducts: builder.query({
+      query: () => "/products/popular",
+       providesTags: ["Product"],
+    }),
   }),
 });
 
@@ -60,5 +81,8 @@ export const {
   useUpdateProductMutation,
   useDeleteProductMutation,
   useUpdateStockOutMutation,
-  useGetSingleProductQuery
+  useGetSingleProductQuery,
+  useGetFlashSaleProductsQuery,
+  useUpdatePopularStatusMutation,
+  useGetPopularProductsQuery
 } = productApi;

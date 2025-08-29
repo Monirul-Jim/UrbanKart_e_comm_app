@@ -16,6 +16,8 @@ router.post(
 );
 
 router.get("/", ProductController.getAllProducts);
+router.get("/flash-sale", ProductController.getFlashSaleProducts); 
+router.get("/popular", ProductController.getPopularProducts);
 router.get("/:id", ProductController.getSingleProduct);
 
 router.patch(
@@ -26,4 +28,6 @@ router.patch(
 
 router.delete("/:id", ProductController.deleteProduct);
 router.patch("/:id/stock-out", ProductController.updateStockOut);
+router.patch("/:id/popular", ProductController.updatePopularStatus);
+
 export const ProductRoutes = router;

@@ -8,6 +8,7 @@ export const createProductValidation = z.object({
     price: z.number(),
     discountPrice: z.number().optional(),
     image: z.string(),
+     isPopular: z.boolean().optional(),
     subCategory: z.string(), 
      stockOut: z.boolean().optional(),
   }),
@@ -25,6 +26,7 @@ export const updateProductValidation = z.object({
     isFlashSale: z.boolean().optional(),
     flashSalePrice: z.number().optional(),
     flashSaleEnd: z.string().datetime().optional(),
+    isPopular: z.boolean().optional(),
      stockOut: z.boolean().optional(),
   }),
 });

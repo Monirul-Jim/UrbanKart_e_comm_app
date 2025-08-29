@@ -5,6 +5,7 @@ import {
   paymentFail,
   paymentCancel,
   paymentIpn,
+  OrderController,
 } from "./payment.controller";
 
 const router = Router();
@@ -14,5 +15,6 @@ router.post("/success", paymentSuccess);
 router.post("/fail", paymentFail);
 router.post("/cancel", paymentCancel);
 router.post("/ipn", paymentIpn);
-
+router.get("/", OrderController.getAllOrders);
+router.put("/:id/status", OrderController.updateOrderStatus);
 export const PaymentRoutes = router;

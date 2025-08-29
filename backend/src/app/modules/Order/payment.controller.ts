@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import SSLCommerzPayment from "sslcommerz-lts";
 import { OrderModel } from "./order.model";
+import catchAsync from "../../utils/catchAsync";
+import { OrderServices } from "./order.service";
+import sendResponse from "../../utils/sendResponse";
 
 const {
   SSL_STORE_ID,
@@ -184,4 +187,43 @@ export const paymentIpn = async (req: Request, res: Response) => {
     console.error("paymentIpn error:", e);
     return res.status(500).json({ success: false, message: e.message });
   }
+};
+
+
+
+const getAllOrders = catchAsync(async (req, res) => {
+  const result = await OrderServices.getAllOrdersFromDB();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Orders retrieved successfully",
+    data: result,
+  });
+});
+const updateOrderStatus = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { orderStatus } = req.body;
+
+  const result = await OrderServices.updateOrderStatusInDB(id, orderStatus);
+
+  if (!result) {
+    return sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: "Order not found",
+    });
+  }
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Order status updated successfully",
+    data: result,
+  });
+});
+
+export const OrderController = {
+  getAllOrders,
+  updateOrderStatus
 };

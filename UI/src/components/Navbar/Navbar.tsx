@@ -1,84 +1,134 @@
 'use client'
 import React, { useState, ReactNode } from 'react';
-import { Menu, X, Home, Info, Mail, Phone } from 'lucide-react';
+import { Menu, X, Home, ShoppingBag, Info, User, LogOut, LayoutDashboard } from 'lucide-react';
+import Link from 'next/link';
+import { useAppSelector, useAppDispatch } from '@/redux/feature/hook';
+import { logout } from '@/redux/feature/auth/authSlice';
 
 interface NavLinkProps {
-  icon: ReactNode; 
+  icon: ReactNode;
   text: string;
   href: string;
 }
 
 interface MobileNavLinkProps extends NavLinkProps {
-  onClick: () => void; 
+  onClick: () => void;
 }
 
 function Navbar() {
-  const [isOpen, setIsOpen] = useState<boolean>(false); 
+  const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleLogout = () => {
+    dispatch(logout());
+    setIsOpen(false);
+  };
+
   return (
-    <nav className="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg p-4 sticky top-0 z-50 rounded-b-xl">
-      <div className="container mx-auto flex justify-between items-center">
+    <nav className="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        
+        {/* Logo */}
+        <Link
+          href="/"
+          className="text-white text-2xl md:text-3xl font-extrabold tracking-wide hover:opacity-90 transition"
+        >
+          Shopora
+        </Link>
 
-        <div className="text-white text-3xl font-extrabold tracking-wider">
-          MyBrand
-        </div>
-
+        {/* Desktop Menu */}
         <div className="hidden md:flex space-x-8 items-center">
           <NavLink icon={<Home className="w-5 h-5 mr-1" />} text="Home" href="/" />
-          <NavLink icon={<Info className="w-5 h-5 mr-1" />} text="Order" href="/order" />
-          <NavLink icon={<Mail className="w-5 h-5 mr-1" />} text="Services" href="#" />
-          <NavLink icon={<Phone className="w-5 h-5 mr-1" />} text="Login" href="login" />
+          <NavLink icon={<ShoppingBag className="w-5 h-5 mr-1" />} text="Shop" href="/order" />
+          <NavLink icon={<Info className="w-5 h-5 mr-1" />} text="About" href="/about" />
+          <NavLink icon={<LayoutDashboard className="w-5 h-5 mr-1" />} text="Dashboard" href="/dashboard" />
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="flex items-center text-white text-lg font-medium hover:text-red-300 transition"
+            >
+              <LogOut className="w-5 h-5 mr-1" />
+              Logout
+            </button>
+          ) : (
+            <NavLink icon={<User className="w-5 h-5 mr-1" />} text="Login" href="/login" />
+          )}
         </div>
 
+        {/* Mobile Menu Button */}
         <div className="md:hidden">
-          <button onClick={toggleMenu} className="text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white rounded-md p-2 transition-transform duration-300 ease-in-out transform hover:scale-110">
+          <button
+            onClick={toggleMenu}
+            className="text-white focus:outline-none p-2 rounded-md hover:bg-white/10 transition"
+          >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </div>
 
-      {isOpen && (
-        <div className="md:hidden absolute top-0 left-0 w-full h-screen bg-gradient-to-br from-blue-700 to-indigo-800 flex flex-col items-center justify-center space-y-8 animate-fade-in z-40">
-          <button onClick={toggleMenu} className="absolute top-6 right-6 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white rounded-md p-2 transition-transform duration-300 ease-in-out transform hover:scale-110">
-            <X size={32} />
+      {/* Mobile Menu */}
+      <div
+        className={`fixed inset-0 bg-gradient-to-b from-blue-700 to-indigo-900 transform ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        } transition-transform duration-300 ease-in-out flex flex-col items-center justify-center space-y-10 z-40`}
+      >
+        <button
+          onClick={toggleMenu}
+          className="absolute top-6 right-6 text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+        >
+          <X size={28} />
+        </button>
+
+        <MobileNavLink icon={<Home className="w-6 h-6 mr-2" />} text="Home" href="/" onClick={toggleMenu} />
+        <MobileNavLink icon={<ShoppingBag className="w-6 h-6 mr-2" />} text="Shop" href="/shop" onClick={toggleMenu} />
+        <MobileNavLink icon={<Info className="w-6 h-6 mr-2" />} text="About" href="/about" onClick={toggleMenu} />
+        
+        {user ? (
+          <button
+            onClick={handleLogout}
+            className="text-white text-2xl font-semibold flex items-center px-6 py-3 rounded-lg hover:bg-red-500/20 transition"
+          >
+            <LogOut className="w-6 h-6 mr-2" />
+            Logout
           </button>
-          <MobileNavLink icon={<Home className="w-6 h-6 mr-2" />} text="Home" href="#" onClick={toggleMenu} />
-          <MobileNavLink icon={<Info className="w-6 h-6 mr-2" />} text="About" href="#" onClick={toggleMenu} />
-          <MobileNavLink icon={<Mail className="w-6 h-6 mr-2" />} text="Services" href="#" onClick={toggleMenu} />
-          <MobileNavLink icon={<Phone className="w-6 h-6 mr-2" />} text="Contact" href="#" onClick={toggleMenu} />
-        </div>
-      )}
+        ) : (
+          <MobileNavLink icon={<User className="w-6 h-6 mr-2" />} text="Login" href="/login" onClick={toggleMenu} />
+        )}
+      </div>
     </nav>
   );
 }
 
 function NavLink({ icon, text, href }: NavLinkProps) {
   return (
-    <a
+    <Link
       href={href}
-      className="text-white text-lg font-medium hover:text-blue-200 transition-all duration-300 flex items-center group relative overflow-hidden px-3 py-2 rounded-lg"
+      className="text-white text-lg font-medium hover:text-blue-200 transition flex items-center relative group"
     >
-      <span className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-lg"></span>
       {icon}
-      <span className="relative">{text}</span>
-    </a>
+      <span>{text}</span>
+      <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-300"></span>
+    </Link>
   );
 }
 
 function MobileNavLink({ icon, text, href, onClick }: MobileNavLinkProps) {
   return (
-    <a
+    <Link
       href={href}
       onClick={onClick}
-      className="text-white text-3xl font-bold hover:text-blue-300 transition-colors duration-300 flex items-center px-6 py-4 rounded-xl transform hover:scale-105"
+      className="text-white text-2xl font-semibold flex items-center px-6 py-3 rounded-lg hover:bg-white/10 transition"
     >
       {icon}
       {text}
-    </a>
+    </Link>
   );
 }
+
 export default Navbar;

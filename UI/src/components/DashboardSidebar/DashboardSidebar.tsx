@@ -63,7 +63,7 @@ const navigation: NavItem[] = [
     href: "/dashboard/orders",
     current: false,
     children: [
-      { name: "All Orders", icon: Package, href: "/dashboard/orders/all", current: false },
+      { name: "All Orders", icon: Package, href: "/dashboard/ordertable", current: false },
       { name: "Pending", icon: Clock, href: "/dashboard/orders/pending", current: false },
       { name: "Completed", icon: CheckCircle, href: "/dashboard/orders/completed", current: false },
     ],

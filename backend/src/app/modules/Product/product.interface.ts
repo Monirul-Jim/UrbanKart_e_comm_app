@@ -15,4 +15,5 @@ export type TProduct = {
   flashSalePrice?: number;
   flashSaleStart?: Date;
   flashSaleEnd?: Date;
+   isPopular?: boolean;
 };
